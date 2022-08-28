@@ -6,9 +6,9 @@ public class BaseResponse
     public string? ErrorMessage { get; set; }
     
     public BaseResponse(bool isSuccess) => IsSuccess = isSuccess;
-    public BaseResponse(string errorMessage) => ErrorMessage = errorMessage;
+    public BaseResponse(string? errorMessage) => ErrorMessage = errorMessage;
 
-    public BaseResponse(bool isSuccess, string errorMessage)
+    public BaseResponse(bool isSuccess, string? errorMessage)
     {   
         IsSuccess = isSuccess;
         ErrorMessage = errorMessage;

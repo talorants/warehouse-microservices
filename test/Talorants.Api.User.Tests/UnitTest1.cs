@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace WareHouse.Solutions.Test;
+namespace Talorants.Api.User.Tests;
 
 public class UnitTest1
 {

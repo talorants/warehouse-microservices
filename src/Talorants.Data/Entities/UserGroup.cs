@@ -1,6 +1,6 @@
-namespace Talorants.Api.User.Entities;
+namespace Talorants.Data.Entities;
 
-public class Permission
+public class UserGroup
 {
     public string? Name { get; set; }
     public ushort Id { get; set; }

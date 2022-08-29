@@ -1,4 +1,4 @@
-﻿namespace Talorants.Shared.Entities;
+namespace Talorants.Data.Entities;
 
 public class EntityBase
 {

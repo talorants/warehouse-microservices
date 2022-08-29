@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Talorants.Shared.Entities\Talorants.Shared.Entities.csproj" />
-    <ProjectReference Include="..\Data\Data.csproj" />
+    <ProjectReference Include="..\Talorants.References\Talorants.References.csproj" />
   </ItemGroup>
 
 </Project>

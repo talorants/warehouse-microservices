@@ -15,9 +15,4 @@
     <PackageReference Include="npgsql.entityframeworkcore.postgresql" Version="6.0.6" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Talorants.Api.User\Talorants.Api.User.csproj" />
-  </ItemGroup>
-
 </Project>

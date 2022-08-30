@@ -6,6 +6,6 @@ public class Product : EntityBase
     public int Amount { get; set; }
     public double InitialPrice { get; set; }
     public double? SellingPrice { get; set; }
-    public Warehouse? Warehouse { get; set; }
     public Category? Category { get; set; }
+    public virtual Warehouse? Warehouse { get; set; }
 }

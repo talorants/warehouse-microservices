@@ -8,12 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="microsoft.entityframeworkcore" Version="6.0.8" />
+    <PackageReference Include="npgsql.entityframeworkcore.postgresql" Version="6.0.6" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Talorants.Shared.Entities\Talorants.Shared.Entities.csproj" />
-    <ProjectReference Include="..\Talorants.References\Talorants.References.csproj" />
+    <ProjectReference Include="..\Talorants.Data\Talorants.Data.csproj" />
+    <ProjectReference Include="..\Talorants.Shared.Models\Talorants.Shared.Models.csproj" />
   </ItemGroup>
 
 </Project>

@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Talorants.Data\Talorants.Data.csproj" />
+    <ProjectReference Include="..\Talorants.Shared.Models\Talorants.Shared.Models.csproj" />
   </ItemGroup>
 
 </Project>

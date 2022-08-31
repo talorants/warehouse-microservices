@@ -1,4 +1,7 @@
 
+using Microsoft.EntityFrameworkCore;
+using Talorants.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>

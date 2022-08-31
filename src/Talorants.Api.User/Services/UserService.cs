@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Talorants.Api.User.Repositories;
 using Talorants.Shared.Model;
 
@@ -14,34 +15,38 @@ public class UserService : IUserService
         _logger = logger;
     }
 
-    public ValueTask<BaseResponse<Data.Entities.User>> GetByIdAsync(Guid id)
+    public async ValueTask<BaseResponse<Data.Entities.User>> CreateAsync(Model.User model)
+    {
+        if (string.IsNullOrWhiteSpace(model.Name))
+            return new("Name is invalid");
+
+        if (string.IsNullOrWhiteSpace(model.Login))
+            return new("Login is invalid");
+
+        if (string.IsNullOrWhiteSpace(model.Password))
+            return new("Password is invalid");
+
+        throw new NotImplementedException();
+
+    }
+
+
+    public ValueTask<BaseResponse<Data.Entities.User>> FindAsync(Expression<Func<Model.User, bool>> expression)
     {
         throw new NotImplementedException();
     }
 
-    public ValueTask<bool> ExistsAsync(Guid id)
+    public ValueTask<BaseResponse<IQueryable<Data.Entities.User>>> GetAllUsersAsync()
     {
         throw new NotImplementedException();
     }
-
-    public ValueTask<BaseResponse<Data.Entities.User>> CreateAsync(Model.User model)
-    {
-        throw new NotImplementedException();
-    }
-
-
-    public ValueTask<BaseResponse<Data.Entities.User>> FindByNameAsync(string name)
-    {
-        throw new NotImplementedException();
-    }
-
-    public ValueTask<BaseResponse<Data.Entities.User>> GetAllPaginatedUsersAsync(int page, int limit)
-    {
-        throw new NotImplementedException();
-    }
-
 
     public ValueTask<BaseResponse<Data.Entities.User>> RemoveByIdAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public ValueTask<BaseResponse<Data.Entities.User>> RemoveRangeAsync(IEnumerable<Model.User> models)
     {
         throw new NotImplementedException();
     }

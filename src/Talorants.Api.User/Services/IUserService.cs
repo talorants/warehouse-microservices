@@ -5,10 +5,10 @@ namespace Talorants.Api.User.Services;
 
 public interface IUserService
 {
-    ValueTask<BaseResponse<IQueryable<Data.Entities.User>>> GetAllUsersAsync();
-    ValueTask<BaseResponse<Data.Entities.User>> FindAsync(Expression<Func<Model.User, bool>> expression);
-    ValueTask<BaseResponse<Data.Entities.User>> RemoveByIdAsync(Guid id);
-    ValueTask<BaseResponse<Data.Entities.User>> RemoveRangeAsync(IEnumerable<Model.User> models);
-    ValueTask<BaseResponse<Data.Entities.User>> CreateAsync(Model.User model);
-    ValueTask<BaseResponse<Data.Entities.User>> UpdateAsync(Model.User model);
+    ValueTask<BaseResponse<IQueryable<Model.User>>> GetAllUsersAsync();
+    ValueTask<BaseResponse<IEnumerable<Model.User>>> FindAsync(Expression<Func<Data.Entities.User?, bool>> expression);
+    ValueTask<BaseResponse<Model.User>> RemoveByIdAsync(Guid id);
+    ValueTask<BaseResponse> RemoveRangeAsync(IEnumerable<Model.User> models);
+    ValueTask<BaseResponse<Model.User>> CreateAsync(string name, string login, string password, string phoneNumber);
+    ValueTask<BaseResponse<Model.User>> UpdateAsync(string name, string login, string password, string phoneNumber);
 }

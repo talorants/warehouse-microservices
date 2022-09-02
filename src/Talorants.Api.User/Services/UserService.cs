@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using Talorants.Api.User.Repositories;
 using Talorants.Shared.Model;
 
@@ -15,44 +16,176 @@ public class UserService : IUserService
         _logger = logger;
     }
 
-    public async ValueTask<BaseResponse<Data.Entities.User>> CreateAsync(Model.User model)
+    public async ValueTask<BaseResponse<Model.User>> CreateAsync(string name, string login, string password, string phoneNumber)
     {
-        if (string.IsNullOrWhiteSpace(model.Name))
+        if (string.IsNullOrWhiteSpace(name))
             return new("Name is invalid");
 
-        if (string.IsNullOrWhiteSpace(model.Login))
+        if (string.IsNullOrWhiteSpace(login))
             return new("Login is invalid");
 
-        if (string.IsNullOrWhiteSpace(model.Password))
+        if (string.IsNullOrWhiteSpace(password))
             return new("Password is invalid");
 
-        throw new NotImplementedException();
+        var userEntity = new Data.Entities.User()
+        {
+            Name = name,
+            Login = login,
+            Password = password,
+            PhoneNumber = phoneNumber,
+        };
 
+        try
+        {
+            var createdUser = await _userRepository.AddAsync(userEntity);
+
+            return new(true) { Data = ToModel(createdUser!) };
+        }
+        catch (DbUpdateException dbUpdateException)
+        {
+            _logger.LogInformation("Error occured:", dbUpdateException);
+            return new("User already exists.");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Error occured at {nameof(UserService)}", e);
+            throw new("Couldn't create user. Contact support.", e);
+        }
     }
 
-
-    public ValueTask<BaseResponse<Data.Entities.User>> FindAsync(Expression<Func<Model.User, bool>> expression)
+    public async ValueTask<BaseResponse<IQueryable<Model.User>>> GetAllUsersAsync()
     {
-        throw new NotImplementedException();
+        try
+        {
+            var existingUsers = _userRepository?.GetAll();
+            if (existingUsers is null)
+                return new("No users found");
+
+            var users = existingUsers.Select(e => ToModel(e));
+
+            return new(true) { Data = users };
+        }
+        catch (Exception e)
+        {
+            _logger.LogInformation($"Error occured at {nameof(UserService)}", e);
+            throw new("Couldn't get users. Contact support.", e);
+        }
     }
 
-    public ValueTask<BaseResponse<IQueryable<Data.Entities.User>>> GetAllUsersAsync()
+    public async ValueTask<BaseResponse<Model.User>> RemoveByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var existingUsers = _userRepository.GetById(id);
+            if (existingUsers is null)
+                return new("User with given Id Not found");
+
+            var removedUser = await _userRepository.Remove(existingUsers);
+            if (removedUser is null)
+                return new("Removing the user failed. Contact support.");
+
+            return new(true) { Data = ToModel(removedUser) };
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Error occured at {nameof(UserService)}", e);
+            throw new("Couldn't remove user. Contact support.", e);
+        }
     }
 
-    public ValueTask<BaseResponse<Data.Entities.User>> RemoveByIdAsync(Guid id)
+
+
+    public async ValueTask<BaseResponse<Model.User>> UpdateAsync(string name, string login, string password, string phoneNumber)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(name))
+            return new("Name is invalid");
+
+        if (string.IsNullOrWhiteSpace(login))
+            return new("Login is invalid");
+
+        if (string.IsNullOrWhiteSpace(password))
+            return new("Password is invalid");
+
+        var userEntity = new Data.Entities.User()
+        {
+            Name = name,
+            Login = login,
+            Password = password,
+            PhoneNumber = phoneNumber,
+        };
+
+        try
+        {
+            var updatedUser = await _userRepository.Update(userEntity);
+            return new(true) { Data = ToModel(updatedUser) };
+        }
+        catch (DbUpdateException dbUpdateException)
+        {
+            _logger.LogInformation("Error occured:", dbUpdateException);
+            return new("User already exists.");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Error occured at {nameof(UserService)}", e);
+            throw new("Couldn't update user. Contact support.", e);
+        }
     }
 
-    public ValueTask<BaseResponse<Data.Entities.User>> RemoveRangeAsync(IEnumerable<Model.User> models)
+    public async ValueTask<BaseResponse> RemoveRangeAsync(IEnumerable<Model.User> models)
     {
-        throw new NotImplementedException();
+        if (models.Count() == 0) return new("Models are invalid.");
+        try
+        {
+            await _userRepository.RemoveRange(models.Select(ToEntity));
+            return new(true);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Error occured at {nameof(UserService)}", e);
+            throw new("Couldn't remove user. Contact support.", e);
+        }
     }
 
-    public ValueTask<BaseResponse<Data.Entities.User>> UpdateAsync(Model.User model)
+    public async ValueTask<BaseResponse<IEnumerable<Model.User>>> FindAsync(Expression<Func<Model.User?, bool>> expression)
     {
-        throw new NotImplementedException();
+        if (expression is null)
+            return new("expession is invalid");
+
+        try
+        {   
+            var existingUser = _userRepository.GetAll()?.Where(expression);
+
+            if (existingUser is null)
+                return new("User with given expression not found");
+
+            var users = existingUser.Select(e => ToModel(e));
+
+            return new(true) { Data = users };
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Error occured at {nameof(UserService)}", e);
+            throw new("Couldn't find user. Contact support.", e);
+        }
     }
+
+    private Model.User ToModel(Data.Entities.User? entity)
+        => new Model.User()
+        {
+            Id = entity!.Id,
+            Name = entity.Name,
+            Login = entity.Login,
+            Password = entity.Password,
+            PhoneNumber = entity.PhoneNumber,
+            CreatedAt = entity.CreatedAt,
+            UpdatedAt = entity.UpdatedAt,
+        };
+    private Data.Entities.User ToEntity(Model.User entity)
+        => new Data.Entities.User()
+        {
+            Name = entity.Name,
+            Login = entity.Login,
+            Password = entity.Password,
+            PhoneNumber = entity.PhoneNumber
+        };
 }

@@ -15,7 +15,7 @@ public class UserRepository : IUserRepository<Data.Entities.User>
 
     public async ValueTask<Data.Entities.User?> AddAsync(Data.Entities.User entity)
     {
-        var entry = await _dbContext.Set<Data.Entities.User>().AddAsync(entity); 
+        var entry = await _dbContext.Set<Data.Entities.User>().AddAsync(entity);
 
         await _dbContext.SaveChangesAsync();
 
@@ -23,11 +23,11 @@ public class UserRepository : IUserRepository<Data.Entities.User>
     }
 
     public IQueryable<Data.Entities.User> GetAll()
-        => _dbContext.Set<Data.Entities.User>();   
+        => _dbContext.Set<Data.Entities.User>();
 
     public Data.Entities.User? GetById(Guid id)
         => _dbContext?.Set<Data.Entities.User>().Find(id);
-        
+
     public async ValueTask<Data.Entities.User?> Remove(Data.Entities.User entity)
     {
         var entry = _dbContext.Set<Data.Entities.User>().Remove(entity);
@@ -35,6 +35,13 @@ public class UserRepository : IUserRepository<Data.Entities.User>
         await _dbContext.SaveChangesAsync();
 
         return entry?.Entity;
+    }
+
+    public async ValueTask RemoveRange(IEnumerable<Data.Entities.User> entities)
+    {
+        _dbContext.Set<Data.Entities.User>().RemoveRange(entities);
+
+        await _dbContext.SaveChangesAsync();
     }
 
     public async ValueTask<Data.Entities.User?> Update(Data.Entities.User entity)

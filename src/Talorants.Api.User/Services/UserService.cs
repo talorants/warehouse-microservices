@@ -1,3 +1,4 @@
+using System.Linq.Dynamic;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Talorants.Api.User.Repositories;
@@ -57,13 +58,13 @@ public class UserService : IUserService
     {
         try
         {
-            var existingUsers = _userRepository?.GetAll();
-            if (existingUsers is null)
+            var existingUsers = await _userRepository?.GetAll()?.ToListAsync()!;
+            if (existingUsers is null || existingUsers.Count() == 0)
                 return new("No users found");
 
             var users = existingUsers.Select(e => ToModel(e));
 
-            return new(true) { Data = users };
+            return new(true) { Data = users.AsQueryable() };
         }
         catch (Exception e)
         {
@@ -152,10 +153,15 @@ public class UserService : IUserService
             return new("expession is invalid");
 
         try
-        {   
-            var existingUser = _userRepository.GetAll()?.Where(expression);
+        {
+            var parametres = expression.Parameters[0];
+            Expression body = expression.Body;
+            var convert = Expression.Convert(body, typeof(bool));
+            var result = Expression.Lambda<Func<Data.Entities.User, bool>>(convert, parametres);
+            
+            var existingUser = await _userRepository.GetAll()?.Where(result!).ToListAsync()!;
 
-            if (existingUser is null)
+            if (existingUser is null || existingUser.Count() == 0)
                 return new("User with given expression not found");
 
             var users = existingUser.Select(e => ToModel(e));

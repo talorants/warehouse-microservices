@@ -1,4 +1,3 @@
-using System.Linq.Dynamic;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Talorants.Api.User.Repositories;

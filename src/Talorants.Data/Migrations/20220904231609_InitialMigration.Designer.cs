@@ -12,14 +12,14 @@ using Talorants.Data;
 namespace Talorants.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220830010610_InitialMigration")]
+    [Migration("20220904231609_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.8")
+                .HasAnnotation("ProductVersion", "6.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -43,9 +43,6 @@ namespace Talorants.Data.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("integer");
 
-                    b.Property<string>("CategoryName")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -64,16 +61,29 @@ namespace Talorants.Data.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("WarehouseId")
+                    b.Property<Guid>("WarehouseId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryName");
-
                     b.HasIndex("WarehouseId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Talorants.Data.Entities.ProductCategory", b =>
+                {
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("text");
+
+                    b.HasKey("ProductId", "CategoryName");
+
+                    b.HasIndex("CategoryName");
+
+                    b.ToTable("ProductCategories");
                 });
 
             modelBuilder.Entity("Talorants.Data.Entities.User", b =>
@@ -107,7 +117,7 @@ namespace Talorants.Data.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("UserGroupId")
+                    b.Property<int>("UserGroupId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -132,6 +142,21 @@ namespace Talorants.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserGroups");
+                });
+
+            modelBuilder.Entity("Talorants.Data.Entities.UserWarehouse", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("UserId", "WarehouseId");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("UserWarehouses");
                 });
 
             modelBuilder.Entity("Talorants.Data.Entities.Warehouse", b =>
@@ -159,63 +184,79 @@ namespace Talorants.Data.Migrations
                     b.ToTable("Warehouses");
                 });
 
-            modelBuilder.Entity("UserWarehouse", b =>
-                {
-                    b.Property<Guid>("UsersId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("WarehousesId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("UsersId", "WarehousesId");
-
-                    b.HasIndex("WarehousesId");
-
-                    b.ToTable("UserWarehouse");
-                });
-
             modelBuilder.Entity("Talorants.Data.Entities.Product", b =>
                 {
-                    b.HasOne("Talorants.Data.Entities.Category", "Category")
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryName");
-
                     b.HasOne("Talorants.Data.Entities.Warehouse", "Warehouse")
                         .WithMany("Products")
-                        .HasForeignKey("WarehouseId");
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
+                    b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("Talorants.Data.Entities.ProductCategory", b =>
+                {
+                    b.HasOne("Talorants.Data.Entities.Category", "Category")
+                        .WithMany("ProductCategories")
+                        .HasForeignKey("CategoryName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Talorants.Data.Entities.Product", "Product")
+                        .WithMany("ProductCategories")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
 
-                    b.Navigation("Warehouse");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Talorants.Data.Entities.User", b =>
                 {
                     b.HasOne("Talorants.Data.Entities.UserGroup", "UserGroup")
                         .WithMany("Users")
-                        .HasForeignKey("UserGroupId");
+                        .HasForeignKey("UserGroupId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
 
                     b.Navigation("UserGroup");
                 });
 
-            modelBuilder.Entity("UserWarehouse", b =>
+            modelBuilder.Entity("Talorants.Data.Entities.UserWarehouse", b =>
                 {
-                    b.HasOne("Talorants.Data.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
+                    b.HasOne("Talorants.Data.Entities.User", "User")
+                        .WithMany("UserWarehouses")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Talorants.Data.Entities.Warehouse", null)
-                        .WithMany()
-                        .HasForeignKey("WarehousesId")
+                    b.HasOne("Talorants.Data.Entities.Warehouse", "Warehouse")
+                        .WithMany("UserWarehouses")
+                        .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("Warehouse");
                 });
 
             modelBuilder.Entity("Talorants.Data.Entities.Category", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("ProductCategories");
+                });
+
+            modelBuilder.Entity("Talorants.Data.Entities.Product", b =>
+                {
+                    b.Navigation("ProductCategories");
+                });
+
+            modelBuilder.Entity("Talorants.Data.Entities.User", b =>
+                {
+                    b.Navigation("UserWarehouses");
                 });
 
             modelBuilder.Entity("Talorants.Data.Entities.UserGroup", b =>
@@ -226,6 +267,8 @@ namespace Talorants.Data.Migrations
             modelBuilder.Entity("Talorants.Data.Entities.Warehouse", b =>
                 {
                     b.Navigation("Products");
+
+                    b.Navigation("UserWarehouses");
                 });
 #pragma warning restore 612, 618
         }

@@ -16,7 +16,7 @@ public class WarehouseService : IWarehouseService
         _warehouse = warehouse;
     }
 
-    public async ValueTask<BaseResponse<Models.Warehouse.Warehouse>> CreateAsync(string name, string? adress, ICollection<User>? user, List<Product>? products)
+    public async ValueTask<BaseResponse<Models.Warehouse.Warehouse>> CreateAsync(string name, string? adress, ICollection<User>? user, List<Models.Product.Product>? products)
     {
         if(string.IsNullOrWhiteSpace(name))
             return new("Name is invalid");
@@ -24,7 +24,7 @@ public class WarehouseService : IWarehouseService
         if(string.IsNullOrWhiteSpace(adress))
             return new("Adress is invalid");
 
-        var warehouseEntity = new Talorants.Data.Entities.Warehouse(name, adress, user, products);
+        var warehouseEntity = new Talorants.Data.Entities.Warehouse(name, adress, user, products?.Select(ToEntity).ToList());
 
         try
         {
@@ -109,7 +109,7 @@ public class WarehouseService : IWarehouseService
         }
     }
 
-    public async ValueTask<BaseResponse<Models.Warehouse.Warehouse>> UpdateAsync(Guid id, string name, string? adress, ICollection<User>? user, List<Product>? products)
+    public async ValueTask<BaseResponse<Models.Warehouse.Warehouse>> UpdateAsync(Guid id, string name, string? adress, ICollection<User>? user, List<Models.Product.Product>? products)
     {
         var existingWarehouse = _warehouse.GetById(id);
         if(existingWarehouse is null)
@@ -118,7 +118,7 @@ public class WarehouseService : IWarehouseService
         existingWarehouse.Name = name;
         existingWarehouse.Adress = adress;
         existingWarehouse.Users = user;
-        existingWarehouse.Products = products;
+        existingWarehouse.Products =products?.Select(ToEntity).ToList();
 
         try
         {
@@ -147,5 +147,16 @@ public class WarehouseService : IWarehouseService
         Adress = entity.Adress,
         Users = (ICollection<Talorants.Api.User.Model.User>)entity.Users!,
         Products = entity.Products
+    };
+
+    public static Talorants.Data.Entities.Product ToEntity(Tolerants.Api.Warehouse.Models.Product.Product model)
+    => new()
+    {
+        Name = model.Name,
+        Amount = model.Amount,
+        InitialPrice = model.InitialPrice,
+        SellingPrice = model.SellingPrice,
+        Category = model.Category,
+        Warehouse = model.Warehouse
     };
 }

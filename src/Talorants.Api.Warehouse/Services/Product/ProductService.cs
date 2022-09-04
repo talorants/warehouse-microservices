@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Talorants.Data.Entities;
 using Talorants.Shared.Model;
 using Tolerants.Api.Warehouse.Repositories;
 
-namespace Tolerants.Api.Warehouse.Services.Warehouse;
+namespace Tolerants.Api.Warehouse.Services.Product;
 
 public class ProductService : IProductService
 {
@@ -17,7 +16,7 @@ public class ProductService : IProductService
         _product = product;
     }
 
-    public async ValueTask<BaseResponse<Models.Product.Product>> CreateAsync(string? name, int amount, double initialPrice, double sellingPrice, Category category, Talorants.Data.Entities.Warehouse warehouse)
+    public async ValueTask<BaseResponse<Models.Product.Product>> CreateAsync(string? name, int amount, double initialPrice, double sellingPrice, Models.Category.Category category, Talorants.Data.Entities.Warehouse warehouse)
     {
         if(string.IsNullOrWhiteSpace(name))
             return new("Name is invalid");
@@ -25,7 +24,7 @@ public class ProductService : IProductService
         if(amount < 0)
             return new("Amount is invalid");
         
-        var productsEntity = new Talorants.Data.Entities.Product(name, amount, initialPrice, sellingPrice, category, warehouse);
+        var productsEntity = new Talorants.Data.Entities.Product(name, amount, initialPrice, sellingPrice, ToEntity(category), warehouse);
 
         try
         {
@@ -110,7 +109,7 @@ public class ProductService : IProductService
         }
     }
 
-    public async ValueTask<BaseResponse<Models.Product.Product>> UpdateAsync(Guid id, string? name, int amount, double initialPrice, double sellingPrice, Category category, Talorants.Data.Entities.Warehouse warehouse)
+    public async ValueTask<BaseResponse<Models.Product.Product>> UpdateAsync(Guid id, string? name, int amount, double initialPrice, double sellingPrice, Models.Category.Category category, Talorants.Data.Entities.Warehouse warehouse)
     {
         var existingProduct = _product.GetById(id);
         if(existingProduct is null)
@@ -120,7 +119,7 @@ public class ProductService : IProductService
         existingProduct.Amount = amount;
         existingProduct.InitialPrice = initialPrice;
         existingProduct.SellingPrice = sellingPrice;
-        existingProduct.Category = category;
+        existingProduct.Category = ToEntity(category);
         existingProduct.Warehouse = warehouse;
 
         try
@@ -152,5 +151,12 @@ public class ProductService : IProductService
         SellingPrice = entity.SellingPrice,
         Category = entity.Category,
         Warehouse = entity.Warehouse
+    };
+
+    public static Talorants.Data.Entities.Category ToEntity(Tolerants.Api.Warehouse.Models.Category.Category model)
+    => new()
+    {
+        Name = model.Name,
+        Products = model.Products
     };
 }

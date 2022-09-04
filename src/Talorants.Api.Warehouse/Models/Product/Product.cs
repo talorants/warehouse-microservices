@@ -11,6 +11,6 @@ public class Product
     public int Amount { get; set; }
     public double InitialPrice { get; set; }
     public double? SellingPrice { get; set; }
-    public Category? Category { get; set; }
+    public Talorants.Data.Entities.Category? Category { get; set; }
     public virtual Talorants.Data.Entities.Warehouse? Warehouse { get; set; }
 }

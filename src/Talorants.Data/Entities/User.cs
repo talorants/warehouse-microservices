@@ -12,6 +12,7 @@ public class User : EntityBase
     public string? Login { get; set; }
     public string? Password { get; set; }
     public string? PhoneNumber { get; set; }
+    public Warehouse? Warehouse { get; set; }
     public virtual UserGroup? UserGroup { get; set; }
     public virtual ICollection<Warehouse>? Warehouses { get; set; }
 }

@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Talorants.Api.User.Repositories;
+using Talorants.Data.Entities;  // we should change this namespace to talorants.warehouse
 using Talorants.Shared.Model;
 
 namespace Talorants.Api.User.Services;
@@ -16,7 +17,8 @@ public class UserService : IUserService
         _logger = logger;
     }
 
-    public async ValueTask<BaseResponse<Model.User>> CreateAsync(string name, string login, string password, string phoneNumber)
+    public async ValueTask<BaseResponse<Model.User>> CreateAsync(string? name, string? login, string? password,
+                                                                string? phoneNumber, UserGroup? userGroup, Warehouse? warehouse)
     {
         if (string.IsNullOrWhiteSpace(name))
             return new("Name is invalid");
@@ -33,6 +35,8 @@ public class UserService : IUserService
             Login = login,
             Password = password,
             PhoneNumber = phoneNumber,
+            UserGroup = userGroup,
+            Warehouse = warehouse
         };
 
         try
@@ -95,7 +99,8 @@ public class UserService : IUserService
 
 
 
-    public async ValueTask<BaseResponse<Model.User>> UpdateAsync(string name, string login, string password, string phoneNumber)
+    public async ValueTask<BaseResponse<Model.User>> UpdateAsync(string? name, string? login, string? password,
+                                                                string? phoneNumber, UserGroup? userGroup, Warehouse? warehouse)
     {
         if (string.IsNullOrWhiteSpace(name))
             return new("Name is invalid");
@@ -112,6 +117,8 @@ public class UserService : IUserService
             Login = login,
             Password = password,
             PhoneNumber = phoneNumber,
+            UserGroup = userGroup,
+            Warehouse = warehouse
         };
 
         try
@@ -157,7 +164,7 @@ public class UserService : IUserService
             Expression body = expression.Body;
             var convert = Expression.Convert(body, typeof(bool));
             var result = Expression.Lambda<Func<Data.Entities.User, bool>>(convert, parametres);
-            
+
             var existingUser = await _userRepository.GetAll()?.Where(result!).ToListAsync()!;
 
             if (existingUser is null || existingUser.Count() == 0)

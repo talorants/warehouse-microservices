@@ -14,9 +14,7 @@ public class CreateProduct
     
     [Required]
     public double InitialPrice { get; set; }
-    
-    public double? SellingPrice { get; set; }
-    
+        
     public Category? Category { get; set; }
     
     public virtual Talorants.Data.Entities.Warehouse? Warehouse { get; set; }

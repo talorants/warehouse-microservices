@@ -11,6 +11,8 @@ public class AppDbContext : DbContext
     public DbSet<Product>? Products { get; set; }
     public DbSet<Warehouse>? Warehouses { get; set; }
     public DbSet<UserGroup>? UserGroups { get; set; }
+    public DbSet<ProductCategory>? ProductCategories { get; set; }
+    public DbSet<UserWarehouse>? UserWarehouses { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -19,6 +21,42 @@ public class AppDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        modelBuilder.Entity<ProductCategory>()
+            .HasKey(pc => new { pc.ProductId, pc.CategoryName });
+        modelBuilder.Entity<ProductCategory>()
+            .HasOne(pc => pc.Product)
+            .WithMany(p => p.ProductCategories)
+            .HasForeignKey(pc => pc.ProductId);
+        modelBuilder.Entity<ProductCategory>()
+            .HasOne(pc => pc.Category)
+            .WithMany(c => c.ProductCategories)
+            .HasForeignKey(pc => pc.CategoryName);
+
+        modelBuilder.Entity<Warehouse>()
+            .HasMany(w => w.Products)
+            .WithOne(p => p.Warehouse)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<UserWarehouse>()
+            .HasKey(uw => new {uw.UserId, uw.WarehouseId});
+        modelBuilder.Entity<UserWarehouse>()
+            .HasOne(uw => uw.User)
+            .WithMany(u => u.UserWarehouses)
+            .HasForeignKey(uw => uw.UserId);
+        modelBuilder.Entity<UserWarehouse>()
+            .HasOne(uw => uw.Warehouse)
+            .WithMany(w => w.UserWarehouses)
+            .HasForeignKey(uw => uw.WarehouseId);
+
+        modelBuilder.Entity<UserGroup>()
+            .HasMany(ug => ug.Users)
+            .WithOne(u => u.UserGroup)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.SetNull);
+            
+            
     }
 
     public override int SaveChanges()

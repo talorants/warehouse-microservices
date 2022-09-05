@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using Talorants.Data.Entities; // we should change this namespace to talorants.warehouse
-using Talorants.Shared.Model;
+using Talorants.Shared.Models;
 
 namespace Talorants.Api.User.Services;
 

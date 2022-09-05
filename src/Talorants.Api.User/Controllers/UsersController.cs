@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Talorants.Api.User.Dtos;
 using Talorants.Api.User.Services;
-using Talorants.Shared.Model;
+using Talorants.Shared.Models;
 
 
 namespace Talorants.Api.User.Controllers;

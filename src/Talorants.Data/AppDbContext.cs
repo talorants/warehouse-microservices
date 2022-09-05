@@ -55,8 +55,6 @@ public class AppDbContext : DbContext
             .WithOne(u => u.UserGroup)
             .IsRequired()
             .OnDelete(DeleteBehavior.SetNull);
-            
-            
     }
 
     public override int SaveChanges()

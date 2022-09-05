@@ -1,6 +1,4 @@
-using Talorants.Data.Entities;
-
-namespace Talorants.Api.User.Model;
+namespace Talorants.Shared.Models;
 
 public class User
 {

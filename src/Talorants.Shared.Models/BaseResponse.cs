@@ -1,4 +1,4 @@
-﻿namespace Talorants.Shared.Model;
+﻿namespace Talorants.Shared.Models;
 
 public class BaseResponse
 {

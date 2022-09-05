@@ -1,4 +1,4 @@
-namespace Talorants.Data.Entities;
+namespace Talorants.Shared.Models;
 
 public class UserWarehouse
 {
@@ -6,4 +6,5 @@ public class UserWarehouse
     public User? User { get; set; }
     public Guid WarehouseId { get; set; }
     public Warehouse? Warehouse { get; set; }
+
 }
